@@ -1,0 +1,46 @@
+\tikzset{>=latex}
+
+\begin{forest} for tree={align=center}
+[<Requête>
+    [\texttt{SELECT}]
+    [<Sélection>
+        [<Attribut>
+            [\texttt{Nom}]
+        ]
+    ]
+    [\texttt{FROM}]
+    [<Depuis>
+		[<Relation>
+			[\texttt{Clients}]
+		]
+		[\texttt{,}]
+		[<Depuis>
+			[<Relation>
+				[\texttt{Commandes}]
+			]
+		]
+    ]
+    [\texttt{WHERE}]
+    [<Condition>
+		[<Condition>
+			[<Attribut>
+				[\texttt{ClientsID}]
+			]
+			[\texttt{=}]
+			[<Attribut>
+				[\texttt{ClientsID}]
+			]
+		]
+		[\texttt{AND}]
+		[<Condition>
+			[<Attribut>
+				[\texttt{Méthode\_Paiement}]
+			]
+			[\texttt{=}]
+			[<Attribut>
+				[\texttt{'espèces'}]
+			]
+		]
+	]
+]
+\end{forest}

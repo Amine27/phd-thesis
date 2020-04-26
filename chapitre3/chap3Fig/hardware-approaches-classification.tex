@@ -1,0 +1,38 @@
+\tikzset{
+  basic/.style  = {draw, text width=4cm, drop shadow, rectangle},
+  root/.style   = {basic, rounded corners=2pt, thin, align=center,
+                   fill=green!30},
+  level 2/.style = {basic, rounded corners=6pt, thin,align=center, fill=green!60,
+                   text width=8em},
+  level 3/.style = {basic, thin, align=left, fill=pink!60, text width=8.5em}
+}
+\begin{tikzpicture}[
+  level 1/.style={sibling distance=50mm},
+  edge from parent/.style={->,draw},
+  >=latex]
+
+% root of the the initial tree, level 1
+\node[root] {Approches orientées matériels}
+% The first level, as children of the initial tree
+  child {node[level 2] (c1) {Dispositif de traitement}}
+  child {node[level 2] (c2) {Gestion du stockage}};
+
+% The second level, relatively positioned nodes
+\begin{scope}[every node/.style={level 3}]
+\node [below of = c1, xshift=15pt] (c11) {CPU \cite{Lang09,Tu14,Xu13b,IntelOracle14,Beloglazov11}};
+\node [below of = c11] (c12) {GPU \cite{Rofouei08}};
+\node [below of = c12] (c13) {FPGA \cite{Woods14}};
+\node [below of = c13] (c14) {Co-Traitement \cite{Hurson16,Do13}};
+
+\node [below of = c2, xshift=15pt] (c21) {HDD \cite{Tu14,Harizopoulos09,Behzadnia16}};
+\node [below of = c21] (c22) {SSD \cite{Schall10,Cheong12}};
+\node [below of = c22] (c23) {Mémoire \cite{Appuswamy15,Korkmaz15,Xu10b}};
+\end{scope}
+
+% lines from each level 1 node to every one of its "children"
+\foreach \value in {1,...,4}
+  \draw[->] (c1.178) |- (c1\value.west);
+
+\foreach \value in {1,...,3}
+  \draw[->] (c2.178) |- (c2\value.west);
+\end{tikzpicture}

@@ -1,0 +1,42 @@
+\tikzset{
+  basic/.style  = {draw, text width=8em, drop shadow, rectangle},
+  root/.style   = {basic, rounded corners=2pt, thin, align=center,
+                   fill=green!30},
+  level 1/.style = {basic, rounded corners=6pt, thin,align=center, fill=green!60,
+                   text width=8em,sibling distance=55mm},
+  level 2/.style = {basic, rounded corners=6pt, thin,align=center, fill=green!60,
+                   text width=8em,sibling distance=40mm},
+  level 3/.style = {basic, thin, align=left, fill=pink!60, text width=6.5em}
+}
+\begin{tikzpicture}[
+  edge from parent/.style={->,draw,black},
+  >=latex]
+
+% root of the the initial tree, level 1
+\node[root] {Types de besoins}
+% The first level, as children of the initial tree
+  child {node[level 1] (c1) {Fonctionnel}}
+  child {node[level 1] (c2) {Non-fonctionnel}
+	child {node[level 2] (c3) {Mesurable}}
+	child {node[level 2] (c4) {Non-Mesurable}}
+  };
+  
+\begin{scope}[every node/.style={level 3}]
+\node [below of = c1, xshift=5pt] (c11) {Niveaux d'autorisations};
+\node [below of = c11] (c12) {$\cdots$};
+\node [below of = c3, xshift=5pt] (c31) {Performance};
+\node [below of = c31] (c32) {$\cdots$};
+\node [below of = c4, xshift=5pt] (c41) {Utilisabilité};
+\node [below of = c41] (c42) {$\cdots$};
+\end{scope}
+
+\foreach \value in {1,...,2}
+  \draw[->] (c1.178) |- (c1\value.west);
+  
+\foreach \value in {1,...,2}
+  \draw[->] (c3.178) |- (c3\value.west);
+  
+\foreach \value in {1,...,2}
+  \draw[->] (c4.178) |- (c4\value.west);
+
+\end{tikzpicture}

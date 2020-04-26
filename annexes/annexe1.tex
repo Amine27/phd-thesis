@@ -1,0 +1,294 @@
+% En cours de route, on peut changer le cadrage par defaut:
+%\FrameChaptersInToc
+%{\Huge\textbf{Annexe}}
+\Annex{L'estimation de cardinalités et de coûts d'opérateurs dans l'optimisation des requêtes}\label{annex:CostModelEstimations}
+Comme nous l'avons décrit précédemment dans la \ref{sec:planningOptimisation} du \ref{chap2} (page \pageref{sec:planningOptimisation}), l'optimiseur de requêtes peut créer une estimation du coût global d'exécution des requêtes à partir de sa connaissance des coûts des opérateurs individuels, des paramètres du système et des distributions de données, ce qui lui permet de choisir le plan de coût minimal estimé à partir de son espace de d’énumération de plan.
+Naturellement, l'estimation de la cardinalité est l'un des aspects les plus essentiels du processus d'estimation des coûts : l'estimateur prédit la cardinalité du résultat étant donné un ensemble de relations d'entrée (qui peuvent être stockées sur disque ou dérivées par la requête) et une opération. Cette cardinalité estimée fournit alors une prédiction de la taille d'une des entrées à l'opération suivante, et ainsi de suite, jusqu'à la fin de la requête.
+
+Dans cette annexe, nous décrirons le processus d'estimation des coûts dans la phase d'optimisation des requêtes dans un SGBD. Premièrement, nous donnons des fonctions d'estimation de cardinalité des résultats intermédiaires dans le plan de requête physique. Deuxièmement, nous détaillons les formules d'estimation du coût de traitement des requêtes représentant le nombre d'entrées/sorties.
+
+\section{Estimation de la cardinalité des résultats intermédiaires}\label{sec:cardinalityEstimation}
+L'estimation de cardinalité des résultats intermédiaires dépend du type de l'opérateur encours dans le plan de requête physique. Dans cette section, nous présentons les formules de base utilisées par un SGBD pour estimer la cardinalité des résultats intermédiaires des opérateurs. Notez que l'objectif de l'estimation de cardinalité n'est pas de donner une information exacte, mais plutôt une estimation pour sélectionner un bon plan de requête physique.
+Pour une relation donnée ou un résultat intermédiaire $R$, on note sa cardinalité par $|R|$. Les notations utilisées les formules sont démontrées le \ref{tab:cardinality-notation}. Les formules de coût sont basées sur les travaux de Selinger \textit{et al.} \cite{Selinger79}.
+
+\subsection{Cardinalité de la sélection}
+La sélection s'appliquait à une relation utilisant un ou plusieurs prédicats. Soit $p$ un prédicat de sélection appliqué à une relation $R$. On note $\sigma_p(R)$ comme résultat de cette sélection. Premièrement, nous avons besoin d'un paramètre supplémentaire appelé \textit{facteur de sélectivité} du prédicat $p$, qui est défini comme le nombre de tuples satisfaisant le prédicat, et sa valeur est comprise entre 0 et 1. En d'autres termes, c'est la probabilité de choisir chaque tuple à partir de relations à utiliser comme arguments des opérateurs. Soit $f_p$ le facteur de sélectivité du prédicat $p$. $f_p$ est défini comme :
+\begin{equation}
+ f_p = \frac{|\sigma_p(R)|}{|R|}
+\end{equation}
+Par conséquent, la cardinalité du résultat de sélection peut être définie comme suit :
+\begin{equation}
+ |\sigma_p(R)| = f_p \times |R|
+\end{equation}
+Pour estimer la cardinalité, nous supposons que nous avons des valeurs uniformes dans les colonnes. Un prédicat $p$ peut impliquer plus d'un attribut ou valeur. Ainsi, le prédicat $p$ peut être simple lorsqu'il a une valeur ou complexe lorsqu'il implique des opérateurs \textit{booléens} reliant plusieurs prédicats simples (comme $p_1$ et $p_2$). La sélectivité des prédicats complexes peut être calculée facilement en fonction de leurs prédicats simples. Dans la Table \ref{tab:sel-predicats}, nous résumons les formules d'estimation de la sélectivité, avec $a$ et $b$ désignent des attributs, $val$, $val_1$ et $val_2$ dénotent des constantes, $max_a$ est la valeur maximale dans la colonne $a$, $|a|$ est le nombre de valeurs distinctes dans l'attribut $a$. Notez que l'optimiseur peut utiliser des équivalents logiques pour détecter si la condition est fausse, et dans ce cas la cardinalité est égale à 0.
+
+\begin{table}
+\centering
+\caption {Notation pour l'estimation de cardinalité.} \label{tab:cardinality-notation}
+\begin{tabular}{cl}
+    \toprule
+    \textbf{Paramètres} & \textbf{Description} \\
+    \midrule
+    $R$, $S$ & Deux relations ou résultat intermédiaire \\ 
+	$|R|$ & Nombre de tuples de la relation $R$ \\ 
+	$||R||$ & Nombre de pages sur lesquelles la relation $R$ est stockée \\ 
+	$|a|$ & Nombre de valeurs distinctes de l'attribut $a$ \\
+    $max_a$ & Valeur maximale pour un attribut $a$ dans la relation $R$ \\
+    $min_a$ & Valeur minimale pour un attribut $a$ dans la relation $R$ \\
+    $L_a(a_R)$ & Longueur moyenne de la valeur de l'attribut $a$ de la relation $R$ (en octets) \\
+    $L_t(R)$ & Longueur moyenne d'un tuple de relation $R$ (en octets) \\
+    \bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}
+\centering
+\caption {Estimation de la sélectivité des prédicats complexes.} \label{tab:sel-predicats}
+\begin{tabular}{cl}
+    \toprule
+    \textbf{Prédicat $p$} & \textbf{Sélectivité $f_p$} \\
+    \midrule
+    $\neg(p)$ & $1-f_p$ \\
+    $p_1 \wedge p_2$ & $f_{p_1} \times f_{p_2}$ \\
+    $p_1 \vee p_2$ & $f_{p_1} + f_{p_2} - f_{p_1} \times f_{p_2}$ \\
+    $a = val $ & $\frac{1}{|a|}$ \\
+    $a = b$ & $\dfrac{1}{max(|a|, |b|)}$ \\
+    $a > val$ & $\dfrac{(max_a - val)}{(max_a - min_a)}$ \\
+    $a < val$ & $\dfrac{(val - min_a)}{(max_a - min_a)}$ \\
+    $val_1 \leqslant a \leqslant val_2$ & $\dfrac{(val_2 - val_1)}{(max_a - min_a)}$ \\
+    \bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Cardinalité de projection}
+La cardinalité du résultat d'une projection sur la relation $R$ est en réalité la cardinalité de $R$ elle-même :
+\begin{equation}
+ |\pi_a(R)| = |R|
+\end{equation}
+Tel que $a$, est un attribut ou un ensemble d'attributs. Parfois, l'optimiseur de requête élimine les tuples en double pour améliorer le plan de requête, car lorsque ceux-ci sont utilisés par d'autres opérateurs comme la jointure, le résultat est le même. Dans ce cas, la cardinalité est égale à :
+\begin{equation}
+ |\pi_a(R)| = |a|
+\end{equation}
+
+\subsection{Cardinalité du produit vectoriel}
+La cardinalité du résultat d'un produit vectoriel de deux relations est la multiplication de leurs cardinalités :
+\begin{equation}
+ |R \times S| = |R| \times |S|
+\end{equation}
+
+\subsection{Cardinalité de jointure}
+Dans cette discussion, nous considérons seulement la jointure naturelle. La jointure naturelle entre deux relations implique seulement l'égalité des deux attributs. Nous étudions donc la jointure $R(a, b) \bowtie S(b, c)$, où$ $b est l'attribut du prédicat de jointure, $a$ et $c$ désignent un ensemble d'attributs. La cardinalité du résultat de jointure $|R \bowtie S|$ dépend des valeurs de l'attribut $b$. Par exemple :
+\begin{itemize}
+ \item Si $R$ et $S$ ont des ensembles disjoints de valeurs $b$, alors $|R \bowtie S| = 0$;
+ \item Si $b$ est la clé primaire de $S$ et la clé étrangère de $R$, chaque tuple de $R$ joint exactement un tuple de $S$, et $|R \bowtie S| = |R|$.
+ \item Si tous les tuples de $R$ et $S$ ont la même valeur $b$, dans ce cas $|R \bowtie S| = |R| \times |S|$.
+\end{itemize}
+En général, on suppose que $b_R$ et $b_S$ sont l'attribut $b$ de $R$ et $S$ respectivement, et $r$ est un tuple de $R$ et $s$ de $S$. Si $|b_R| > |b_S|$, alors la valeur $b$ de $s$ est une valeur qui apparaît dans la valeur $b$ de $R$. Par conséquent, la probabilité que $r$ et $s$ partagent la même valeur $b$ est $1 / |b_R|$. De même, si $|b_R | < |b_S|$, alors la probabilité que $r$ et $s$ partagent la même valeur $b$ est $1 / |b_S|$. Dans l'opération de jointure, le nombre de comparaison possible des paires $r$ et $s$ est $|R| \times |S|$, donc la cardinalité du résultat d'une jointure naturelle est :
+\begin{equation}
+ |R \bowtie S| = max(|R|, |S|) / max(|b_R|, |b_S|)
+\end{equation}
+Le même principe peut s'appliquer pour les attributs de jointure multiples. Nous supposons que $B$ est un ensemble des attributs impliqués dans la jointure, la cardinalité devient :
+\begin{equation}
+ |R \bowtie S| = max(|R|, |S|) / max(|b_{i_R}|, |b_{i_S}|), \forall b_i \in B
+\end{equation}
+Si l'on suppose que $J_{RS}$ est la probabilité que deux lignes vérifient les conditions de jointure, la cardinalité du résultat de cette jointure peut être calculée comme suit :
+\begin{equation}
+ |R \bowtie S| = max(|R|, |S|) \times J_{RS}
+\end{equation}
+
+\subsection{Cardinalité de l'agrégation}
+Le nombre de tuples générés à partir d'une agrégation correspond au nombre des groupes résultants. Ce dernier peut être compris entre 1 et $|R|$, donc la cardinalité du résultat de l'agrégation est égale à :
+\begin{equation}
+ |\gamma(R)| = \frac{|R|}{2}
+\end{equation}
+
+\subsection{Cardinalité de l'union}
+Le nombre maximal de tuples généré par l'union de deux relations $R$ et $S$ $(R \cup S)$ est la somme de leurs cardinalités $|R|$ et $|S|$, et le minimum est le maximum entre $|R|$ et $|S|$. Ainsi, la cardinalité du l'union peut être la moyenne des valeurs maximales et minimales.
+\begin{equation}
+ |R \cup S| = max(|R|, |S|) + \frac{min(|R|, |S|)}{2}
+\end{equation}
+
+\subsection{Cardinalité de l'intersection}
+La cardinalité du résultat de l'intersection de deux relations $R$ et $S$ $(R \cap S)$ est comprise entre 0 et la cardinalité minimale des deux relations. Ainsi, la cardinalité peut être considérée comme la valeur moyenne :
+\begin{equation}
+ |R \cap S| = \frac{min(|R|, |S|)}{2}
+\end{equation}
+
+\subsection{Cardinalité de la différence}
+Le maximum de tuples généré à partir de la différence de deux relations $R$ et $S$ $(R - S)$, est la cardinalité de $R$ ($|R|$) et le minimum est $|R| - |S|$. Ainsi, la cardinalité de la différence peut être considérée comme la moyenne :
+\begin{equation}
+ |R - S| = \frac{(|R| - |S|)}{2}
+\end{equation}
+
+\section{Modèles de coût des opérateurs physique}\label{sec:operatorsCostModel}
+Comme il a été mentionné précédemment dans le \ref{sec:costModelPram} du \ref{chap2} (page \pageref{sec:costModelPram}), le coût d'exécution d'une requête peut être représenté par plusieurs paramètres ($\mathcal{C_{E/S}}$, $\mathcal{C_{CPU}}$, $\mathcal{C_{COM}}$, etc.). Pour les grandes bases de données, l'accent est souvent mis sur la minimisation des coûts d'accès au stockage secondaire. Les fonctions de coûts ignorent d'autres facteurs et comparent les plans d'exécution de requêtes en termes de nombre de transferts de blocs entre le disque et les tampons mémoire. Pour les bases de données plus petites, où la plupart des données impliqués dans la requête peuvent être stockées en mémoire, l'accent est mis sur la minimisation des coûts de calcul du processeur. Dans les bases de données distribuées, où de nombreux sites sont impliqués, les coûts de communication doivent être minimisés. Il est difficile d'inclure tous les paramètres du coût dans une fonction de coût (pondérée) en raison de la difficulté d'attribuer des pondérations appropriées aux paramètres de coût. C'est pourquoi certaines fonctions de coût considèrent un seul facteur d'accès au disque. Cependant, dans cette discussion, nous supposons que le coût qui domine l'exécution d'une requête est le $\mathcal{C_{E/S}}$.
+
+\subsection{Préliminaires}
+Nous supposons que chaque opérateur est responsable de transmettre son résultat à l'opérateur suivant via la mémoire principale.
+Pour le modèle de coût, nous considérons certains paramètres, comme le montre le \ref{tab:cost-func-param}. Le coût de traitement concerne la mesure du temps d'exécution, qui est directement influencée par le nombre de pages d'E/S. Ainsi, nous représentons le $\mathcal{C_{E/S}}$ de tout opérateur ($op$) soit par numéro de pages chargées soit par le nombre secondes écoulé, comme suit :
+
+\begin{equation}
+ \mathcal{C_{E/S}}(op)  = \begin{cases}
+  P_0 & \text{, si le coût est représenté par le nombre de pages d'E/S} \\
+  T_0 & \text{, si le coût est représenté par le temps écoulé}.
+\end{cases}
+\end{equation}
+
+\begin{table}
+\centering
+\caption {Paramètres des fonctions de coûts.} \label{tab:cost-func-param}
+\begin{tabular}{cl}
+    \toprule
+    \textbf{Paramètres} & \textbf{Description} \\
+    \midrule
+	$PS$ & Taille de la page \\
+	$t_{disque}$ & Temps de transfert du disque d'une page \\
+	%$t_{net}$ & Temps de transfert réseau d'une page \\
+	$M$ & Le nombre de blocs dans le tampon de mémoire principale \\
+	$||R||$ & Taille sur les pages de la relation $R$ \\
+	$|R|$ & Cardinalité de la relation $R$ (nombre de tuples) \\
+	$L_t(R)$ & Longueur de tuple pour la relation $R$ \\
+	$L_a(C_R)$ & La longueur moyenne de la colonne $C$ dans la relation $R$ \\
+	$|R_C|$ & Nombre de valeurs distinctes de la colonne $C$ dans la relation $R$ \\
+	$\sigma_R$ & facteur de sélectivité pour la sélection $f$ sur la relation $R$ \\
+	$\pi_R$ & Facteur de sélectivité pour la projection $\pi$ sur la relation $R$ \\
+	$\bowtie_{RS}$ & Facteur de sélectivité pour la jonction $J$ sur les relations $R$ et $S$ \\
+    \bottomrule
+\end{tabular}
+\end{table}
+
+Où $P_{op}$ est le nombre de pages lues ou écrites pendant l'exécution de l'opération $op$, et $T_{op}$ est le temps écoulé pendant l'exécution de l'opérateur $op$. $P_{op}$ et $T_{op}$ sont définis comme :
+\begin{equation}
+ P_{op} = P_{entrée} + P_{interm} + P_{sortie}
+\end{equation}
+\begin{equation}
+ T_{op} = T_{entrée} + T_{interm} + T_{sortie}
+\end{equation}
+
+Où $P_{entrée}$ et $T_{entrée}$ sont le nombre de pages et le temps consommé dans la lecture de(des) relation(s) d'entrée, respectivement. $P_{sortie}$ et $T_{sortie}$ sont respectivement le nombre de pages et le temps consommé dans la transmission de la relation de sortie à l'opérateur père suivant ou au disque, en supposant que le flux de sortie final est écrit sur le disque pour une utilisation ultérieure. $P_{interm}$ et $T_{interm}$ sont le nombre de pages et le temps consommé dans le stockage des résultats intermédiaires sur le disque. Pour certains opérateurs, $P_{interm}$ et $T_{interm}$ sont nuls. $T_{op}$ peut être directement estimé à partir de $P_{op}$ en utilisant des paramètres de la base de données pour définir le temps moyen pour charger des pages à partir du réseau ou du disque. Sachant que les opérateurs unaires ont besoin d'une relation à lire comme entrée à la différence des opérateurs binaires, qui ont besoin de deux relations; Le coût d'entrée d'un opérateur est défini comme suit :
+\begin{equation}
+  T_{entrée} = \begin{cases}
+  P_{entrée} \times t_{disque} & \text{, si un opérateur unaire} \\
+  P_{entrée_R} \times t_{disque} + P_{entrée_S} & \text{, si un opérateur binaire sans pipelines} \\
+  max(P_{entrée_R} \times t_{disque}, P_{entrée_S} \times t_{disque}) & \text{, si un opérateur binaire utilisant les pipelines}.
+\end{cases}
+\end{equation}
+Les coûts intermédiaires et de sortie restent les mêmes pour les opérateurs unaires ou binaires :
+\begin{equation}
+T_{sortie} = P_{sortie} \times t_{disque}
+\end{equation}
+\begin{equation}
+T_{interm} = P_{interm} \times t_{disque}
+\end{equation}
+Suivant, nous donnons le coût d'E/S pour chaque type d'opérateur.
+
+\subsection{Coût de la sélection}
+Une sélection sur une relation $R$ réduit la taille de $R$ : horizontalement par un facteur de sélectivité $\sigma_R$ et verticalement par un facteur de filtrage $\varphi_{R, q}$ (seuls les attributs $q$ sont retenus). Nous définissons $\varphi_{q}^{R}$ comme le rapport de la taille de $q$ colonnes d'un tuple dans la relation $R$, $\varphi_{q}^{R}$ peut être défini comme :
+\begin{equation}
+\varphi_{q}^{R} = \sum_{c \in q}{L_a(R_c)/L_t(R)}
+\end{equation}
+Le coût de sortie d'une opération de sélection est défini comme suit :
+\begin{equation}
+P_{sortie} = \sigma_R \times || R || \times \varphi_{q}^{R}
+\end{equation}
+Pour le coût d'entrée, tous les tuples de $R$ sont scannés, sauf si $R$ est trié par des attributs de restriction, alors seulement les tuples satisfaisant la condition de sélection seront analysés. Ainsi, le coût d'entrée peut être calculé comme suit :
+\begin{equation}
+ P_{entrée} = \begin{cases}
+			|| R || & \text{, si $R$ n'est pas trié} \\
+			\sigma_R \times || R || & \text{, si $R$ est trié}.
+\end{cases}
+\end{equation}
+L'opérateur de sélection ne produit aucun résultat intermédiaire ($P_{interm} = 0$).
+% Par conséquent, le coût d'E/S est défini comme suit :
+% \begin{equation}
+%  \mathcal{C_{E/S}}(\sigma) = \begin{cases}
+% 			|| R || + \sigma_R \times || R || \times  \varphi_{q}^{R} & \text{, si $R$ n'est pas trié} \\
+% 			\sigma_R \times || R || + \sigma_R \times || R || \times  \varphi_{q}^{R} & \text{, si $R$ est trié}.
+% \end{cases}
+% \end{equation}
+
+\subsection{Coût de la projection}
+Dans une projection, il n'y a pas d'attributs redondants à supprimer, c'est-à-dire que l'entrée est exactement les attributs à transmettre à l'opérateur parent.
+\begin{equation}
+P_{sortie} = \pi_R \times || R ||
+\end{equation}
+Si la projection doit trier son entrée, le $P_{interm}$ devient :
+\begin{equation}
+ P_{interm} = \begin{cases}
+			0 & \text{, si } P_R \leqslant M - 1 \text{ ou aucun tri n'est effectué} \\
+			P_R \times log_{M-1}(P_R) & \text{, sinon.}
+\end{cases}
+\end{equation}
+
+\subsection{Coût de la jointure}
+Nous considérons l'opérateur de jointure classique qui est appliqué sur deux relations $R$ an $S$ et produit une relation de sortie $RS$ équivalente à :
+\begin{equation}
+P_{sortie} = \; \bowtie_{RS} \times PS \times \frac{L_t(RS)}{L_t(R) \times L_t(S)} \times || R || \times || S ||
+\end{equation}
+
+\subsubsection{Jointure par boucle imbriquée}
+Dans l'algorithme de la boucle imbriquée, la relation externe doit être la plus petite, afin de réduire le nombre d'itérations. Cependant, si une seule relation entre dans la mémoire principale, elle est utilisée comme relation interne pour éviter les accès répétés au disque.
+Soit $R$ et $S$ les relations impliquées dans l'opérateur de jointure, où $R$ est la relation extérieure. Donc, $|| S || \leqslant M \leqslant || R ||$ Comme nous l'avons montré précédemment, $P_{entrée}$ est défini comme :
+\begin{equation}
+ P_{entrée} = \begin{cases}
+			||R|| + ||S|| & \text{, si sans pipeline} \\
+			max(||R||, ||S||)  & \text{, sinon.}
+\end{cases}
+\end{equation}
+Pour le coût intermédiaire, il diffère si la relation interne ($R$) peut être allouée en mémoire ou non. Si c'est le cas, le coût de la jointure est égal au coût du traitement du CPU. Sinon, $R$ doit être stockée sur le disque et être lue à plusieurs reprises pour chaque tuple de la relation externe ($S$). Ainsi, le $P_{interm}$ peut être défini comme :
+\begin{equation}
+ P_{interm} = \begin{cases}
+			0 & \text{, si } || R || \leqslant (M - || S||) \\
+			|R| \times ||S||  & \text{, sinon.}
+\end{cases}
+\end{equation}
+Mais si la relation interne est déjà triée, la comparaison ne sera répétée que pour les tuples satisfaisant le prédicat de condition.
+
+\subsubsection{Jointure par fusion}
+L'algorithme de jointure par fusion est utilisé uniquement lorsque les deux relations sont triées sur l'attribut de jointure. Les relations sont retrouvées en parallèle. Ainsi, $P_{interm}$ est nul, et $P_{entrée}$ est calculé comme suit :
+\begin{equation}
+P_{entrée} = max (|| R ||, || S ||)
+\end{equation} 
+
+\subsubsection{Jointure par hachage}
+Nous supposons que $R$ est la relation extérieure. Ainsi, la table de hachage est construite pour $S$ et $|| S || \leqslant || R ||$. Le coût de création de la table de hachage $h_{constr}$ est le coût de chargement de $S$ et de l'écriture de la table de hachage sur le disque. Ensuite $h_{constr}$ et $R$ sont joints suivant une jointure par boucle imbriquée de sorte que $h_{constr}$ est la relation interne. Si l'on suppose que $P_{\bowtie_S}$ est le pourcentage de tuples de $S$ qui dépend du facteur de sélectivité de jointure et de la fonction de hachage, alors le coût d'entrée $P_{entrée}$ et intermédiaire $P_{interm}$  seront défini comme suit :
+\begin{equation}
+|| h_{constr} || = P_{\bowtie_S} \times || S ||
+\end{equation} 
+
+\begin{equation}
+ P_{entrée} = \begin{cases}
+			|| R || + || S || + || h_{constr} || & \text{, si aucun pipeline} \\
+			max (|| R ||, || S ||) + || h_{constr} ||  & \text{, sinon.}
+\end{cases}
+\end{equation}
+
+\begin{equation}
+ P_{interm} = \begin{cases}
+			0 & \text{, si } || h_{constr} || \leqslant (M- || R ||) \\
+			| R | \times || h_{constr} ||  & \text{, sinon.}
+\end{cases}
+\end{equation}
+
+\subsection{Coût de tri}
+Lors du tri de relations qui peuvent être allouées entièrement en mémoire principale, des techniques de tri standard telles que le tri rapide peuvent être utilisées. Le tri des relations qui ne peuvent pas être allouées en mémoire est appelé \textit{tri externe}. La technique la plus couramment utilisée pour le tri externe est l'algorithme de tri-fusion externe. L'idée principale de cet algorithme est d'apporter des portions de la relation ($R$) dans la mémoire principale, de les trier, puis de retourner le résultat sur le disque. Cela crée des segments de fichiers triés, qui doivent être fusionnés afin de créer un seul fichier trié.
+La première étape lit chaque bloc de la relation et les écrit à nouveau.
+\begin{equation}
+P_{entrée} = 2 \times || R ||
+\end{equation}
+Le nombre initial d'exécutions (segment de fichier trié produit par une itération) est $\lceil|| R ||/M\rceil$. Puisque le nombre d'exécutions diminue d'un facteur $M-1$ dans chaque passe de fusion, le nombre total de passes de fusion requises est :
+\begin{equation}
+P_{interm} = \lceil log_{M - 1} ( || R || / M )\rceil
+\end{equation}
+Chacune de ces passes lit chaque bloc de la relation une fois et l'écrit une fois, donc le $P_{sortie}$ est :
+\begin{equation}
+P_{sortie} = \lceil log_{M - 1} ( || R || / M )\rceil
+\end{equation}
+
+\subsection{Coût des opérations ensemblistes}
+Nous pouvons implémenter les opérations union, intersection et différence en triant d'abord les deux relations, puis en balayant une fois par chacune des relations triées pour produire le résultat. Pour $R \cup S$, lorsqu'un balayage simultané des deux relations révèle le même tuple dans les deux fichiers, seul l'un des tuples est conservé. Le résultat de $R \cap S$ ne contiendra que les tuples qui apparaissent dans les deux relations. Nous appliquons une différence des relations, $R - S$, de la même manière, en retenant des tuples en $R$ seulement s'ils sont absents dans $S$.
+
+Pour toutes ces opérations, un seul balayage des deux relations d'entrée triées est nécessaire, donc le coût est $||R|| + ||S||$ transferts de blocs si les relations sont triées dans le même ordre. Si non, le coût du tri doit être inclus.
+
+\subsection{Coût d'agrégation}
+Les algorithmes permettant de calculer les agrégats sont basés soit sur le tri, soit sur une combinaison du hachage et du tri. Un tri sur les attributs de groupement (argument du \texttt{GROUP BY} de SQL) permet de créer des segments correspondant à chaque valeur de ces attributs. Pour chaque segment, on applique les fonctions d’agrégat (\texttt{COUNT}, \texttt{SUM}, \texttt{MIN}, \texttt{MAX}, etc.) demandées. Un hachage préalable sur l’attribut de groupement permet de ramener le problème à un calcul d’agrégat dans chaque partition de hachage. L’approche est donc ici analogue à celle de la jointure par hachage et tri présentée ci-dessus.

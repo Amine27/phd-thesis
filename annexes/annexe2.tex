@@ -1,0 +1,82 @@
+% En cours de route, on peut changer le cadrage par defaut:
+%\FrameChaptersInToc
+%{\Huge\textbf{Annexe}}
+\Annex{Bornes de confiance de modèle de coût énergétique}\label{annex:ConfidenceBounds}
+Dans cette annexe, nous allons étudier les bornes de confiance dans les données et les résultats de notre modèle de coût, en utilisant les données de configuration d'expérimentation haut de gamme introduite dans le \ref{chap5} (page \pageref{chap5}). Pour trouver les bornes inférieures et supérieures de la population, nous utilisons l'inégalité de Chebyshev (6). L'inégalité est basé sur la moyenne de la population (notée $\mu$) et l'écart type de la population (notée $\sigma$). Malheureusement, $\mu$ et $\sigma$ sont des paramètres inconnus. Par conséquent, nous devons trouver leurs limites supérieures et inférieures avec un certain degré de confiance pour calculer l'inégalité de Chebyshev. Pour le faire, nous (a) testons ci-dessus si les échantillons proviennent d'une population qui suit la distribution normale; (b) trouvons les bornes inférieures et supérieures de la moyenne de population, avec le degré de confiance étant de 99\%; (c) trouvons les bornes inférieures et supérieures de l'écart-type de la population, avec le degré de confiance étant de 99\%.
+
+\section{Testons si la population suit la distribution normale}
+L'échantillon moyen est égal à 116,4554, qui est désignée par $\bar{x}$; tandis que l'écart type d'échantillon est égal à 2,1822, qui est désignée par $s$. Le nombre d'échantillons est égal à 131 et est notée $n$.
+Nous effectuons des tests d'hypothèses pour déterminer si les échantillons proviennent d'une population normalement distribuée ou non. Le test d'hypothèse est effectuée en appliquant le test du chi carré pour la distribution normale.
+L'hypothèse nulle ($H_0$) est défini comme ``La distribution de probabilité de la population est normal''. À l'autre extrême, l'hypothèse alternative ($H_a$) est défini comme ``La distribution de probabilité de la population n'est \textbf {pas} normale''.
+
+Nous divisons d'abord la distribution standard normale $N(0,1)$ dans un ensemble $A_1$ contenant huit parties proportionnellement égales, chaque partie étant égale à 1/8; puis nous trouvons un ensemble $B_1$ de contenant huit parties dans une correspondance un-à-un avec ceux appartenant à $A_1$ tel que chaque échantillon est affecté sur l'une des parties appartenant à $ B_1 $. Nous trouvons le point de distribution normale, ce qui équivaut à 1,15, le plus à droite divisée en soustrayant 1/8 = 0,125 de 1, puis regardant dans la table de distribution normale. En suivant la procédure ci-dessus, nous obtenons l'ensemble suivant (nommé $A_2$) des points de division {-1.15, -0,675, -0.32, 0, 0,32, 0,675, 1,15} représentant les valeurs $Z$. Selon les points de division ci-dessus, on trouve sept nouveaux points intermédiaires en correspondance un-à-un avec les précédentes. Plus précisément, nous appliquons l'\ref{eq:equa1} pour chaque point de $A_2$, ce qui donne l'ensemble suivant (nommé $B_2$) des points de division {113,946, 114,9825, 115,7572, 116,4554, 117,1537, 117,9284, 118,9649}.
+
+En prenant en considération ce qui précède, on peut formuler l'hypothèse nulle et l'hypothèse alternative comme suit:
+\begin{itemize}
+ \item $H_0$: Toutes les parties de $B_1$ sont proportionnellement égale.
+ \item $H_a$: Au moins l'une des parties de $B_1$ n'est pas proportionnellement égale avec le reste des parties.
+\end{itemize}
+
+\begin{equation}\label{eq:equa1}
+ Z = \frac{x-\bar{x}}{s} \Leftrightarrow x = \bar{x} + Z \times s
+\end{equation} 
+
+\begin{equation}\label{eq:equa2}
+ \tilde{X^2} = \sum_{i=1}^{8} \frac{(O_i-E_i)^2}{E_i}
+\end{equation}
+
+Ensuite, nous trouvons le nombre de points (estimés) appartiennent à chacune des parties de $A_1$. Pour la première partie de $A_1$, nous constatons qu'il contient $np_1 = 131 \times 1/8 = 16,375$ points (estimés), avec $p_1$ représentant la probabilité de la première partie. Puisque toutes les parties ont la même probabilité, nous concluons que chaque partie contient 16,375 points (estimés). Les points observés appartenant aux parties de $B_1$ sont trouvés comme suit. Chaque point est inférieure ou égale au point le plus à gauche de $B_2$ appartient à la première partie de $B_1$. Les points qui sont supérieurs que le point le plus à gauche de $B_2$ et inférieur ou égal au second point le plus à gauche de $B_2$ appartiennent à la deuxième partie de $B_1$. Le processus d'affectation se déroule d'une manière similaire pour le reste des parties. Le \ref{tab:inf-calc} contient les informations ci-dessus ainsi que des informations pour le calcul de l'\ref{eq:equa2} qui se rapproche asymptotiquement chi carré de distribution $X^2$.
+
+\begin{table}
+\centering
+\caption {Information sur les calculs.} \label{tab:inf-calc}
+\begin{tabular}{ccccc}
+\toprule
+\textbf{Intervalle} & \textbf{Points observés $(O)$} & \textbf{Points estimés $(E)$} & \textbf{$(O-E)$} & \textbf{$(O-E)^2/E$} \\
+\midrule
+	$\leq$ 113,946 & 15 & 16,37 & -1,37 & 0,114655 \\
+	(113,946,  114,9825]  & 18 & 16,37 & 1,63 & 0,162303 \\
+	(114,9825,  115,7572] & 18 & 16,37 & 1,63 & 0,162303 \\
+	(115,7572,  116,4554] & 19 & 16,37 & 2,63 & 0,422535 \\
+	(116,4554,  117,1537] & 18 & 16,37 & 1,63 & 0,162303 \\
+	(117,1537,  117,9284] & 6 & 16,37 & -10,37 & 6,569145 \\
+	(117,9284,  118,9649] & 20 & 16,37 & 3,63 & 0,804942 \\
+	$\geq$ 118,9649 & 17 & 16,37 & 0,63 & 0,024246 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La région critique de l'hypothèse nulle représente la région que l'hypothèse nulle est rejetée. Pour calculer cette région, nous avons d'abord besoin de choisir (a) le niveau de signification $a$, ce qui est normalement comprise entre 0,5\% et 5\%; et (b) les degrés de liberté $df = k-m-1$, avec $k$ et $m$ dénotant le nombre de groupes et le nombre de paramètres du modèle, respectivement. Dans notre cas, nous choisissons $a = 0,05$; le nombre de groupes est égal à huit; tandis que le nombre de paramètres du modèle est égal à deux (moyenne et écart-type). Par conséquent, $df = 8-2-1 = 5$. La région critique est la région au-delà de $X_{0,5}^2 = 11.07$, qui est désignée en tant que valeur critique et calculée à partir de la table de distribution chi carré. Selon l'\ref{eq:equa2} et le \ref{tab:inf-calc}, nous observons que $\tilde{X}^2 = 8,42$, ce qui est inférieur à la valeur critique 11,07. En conséquence, l'hypothèse nulle n'est pas rejetée et nous pouvons supposer que la population suit la distribution normale. Notez que plus que $\tilde {X^2}$ est élevé, plus est la preuve pour rejeter l'hypothèse nulle.
+
+\section{Trouvons les bornes inférieures et supérieures de la moyenne de population avec 99\% de confiance}
+La moyenne de population est notée $\mu$, tandis que l'écart-type de la population est définie comme $\sigma$. Nous trouvons les bornes inférieures et supérieures ($\mu_l$ et $\mu_u$) de la population signifient moins de $P\%$ probabilité ou équivalente $P\%$ degré de confiance. Nous devons d'abord préciser le niveau de signification $a = (100-P) / 100$. On notera que plus le degré de confiance est élevé, plus l'intervalle entre les bornes inférieures et supérieures est grand. Pour notre problème, nous allons calculer les bornes inférieures et supérieures de la population signifient avec 99\% degré de confiance, ce qui est une valeur commune. Par conséquent, le niveau de signification est de $a = (100-99) /100=0,01$. Puisque la population suit la distribution normale et l'écart $\sigma$ n'est pas connue, nous utilisons l'\ref{eq:equa3} pour calculer les limites de la moyenne de la population. Notez que $t_ {a / 2}$ représente la distribution $t$ de puissance, avec $a$ indiquant le niveau de signification. Étant donné que les degrés de liberté $df$ égale $n-1$, on calcule $t_{0,005} = 2,58$. Par conséquent, selon l'\ref{eq:equa3}, nous pouvons observer que, avec 99\% degré de confiance, $\mu_l = 115,96$, et $\mu_u = 116,94$.
+
+\begin{equation}\label{eq:equa3}
+ \bar{x} \pm t_{a/2} \times \frac{s}{\sqrt{n}}
+\end{equation}
+
+\section{Trouvons les bornes inférieures et supérieures de l'écart type de population avec 99\% de confiance}
+Puisque nous exigeons 99\% de confiance, le niveau de signification est $a = 0,01$. Les bornes inférieures et supérieures de la population écart-type sont exprimés par l'\ref{eq:equa4} et l'\ref{eq:equa5}, respectivement. En regardant dans le tableau de distribution chi carré nous observons que $X_ {0,005}^2 = 175,3$ et $X_{0.995}^2 = 92,2 $ (notez que $df$ est égal à $n-1$). Par conséquent, $\sigma_l = 1,88$ et $\sigma_u = 2,59$.
+
+\begin{equation}\label{eq:equa4}
+ \sigma_l = s \times \sqrt{\frac{n-1}{X_{a/2}^2}}
+\end{equation}
+
+\begin{equation}\label{eq:equa5}
+ \sigma_u = s \times \sqrt{\frac{n-1}{X_{1-a/2}^2}}
+\end{equation}
+
+\section{Trouvons avec la probabilité les bornes inférieures et supérieures de la population}
+De l'inégalité de Chebyshev (\ref{eq:equa6}) nous pouvons trouver avec la probabilité les bornes pour la population. Plus précisément, pour trouver la limite inférieure de la population, nous supposons que $X-\mu \leq 0$,  $\mu=\mu_l$, et $\sigma = \sigma_u$. Selon le ci-dessus, l'inégalité de \ref{eq:equa6} devient l'inégalité de l'\ref{eq:equa7}. Pour $k = 3$, nous avons ce que $Pr (X \leq 108,19) \leq 0,11$. Pour trouver la limite supérieure de la population, nous supposons que $X-\mu \geq 0$, $\mu = \mu_u$, et $ \sigma = \sigma_u$. Selon le ci-dessus, l'inégalité de l'\ref{eq:equa6} devient inégalité de l'\ref{eq:equa8}. Pour $k = 3$, nous avons $Pr(X \geq 124,71) \leq 0,11$. Pour trouver le niveau de confiance pour la limite inférieure de la population, il faut multiplier la probabilité de $X$ pour être supérieure à 108,19 (c-à-d : $1-0,11 = 0,89 $) par (a) le niveau de confiance pour la limite inférieure de la population moyenne et (b) par le niveau de confiance pour la limite supérieure de la norme de la population type. En conséquence, la limite inférieure de la population est égale à 108,9 avec 87\% ($0.99\times0.99\times0.89$) degré de confiance. En opérant de manière analogue, la limite supérieure de la population est égale à 124,71 avec un degré de confiance de 87\%. Notez que nous pouvons augmenter le degré de confiance (en augmentant $k$) au coût de la diminution/augmentation de la partie inférieure/supérieure de la population.
+
+\begin{equation}\label{eq:equa6}
+ Pr( |X-\mu| \geq k \sigma ) \leq 1/k^2
+\end{equation}
+
+\begin{equation}\label{eq:equa7}
+ Pr( X \leq \mu_l - k \sigma_u ) \leq 1/k^2
+\end{equation}
+
+\begin{equation}\label{eq:equa8}
+ Pr( X \geq \mu_u + k \sigma_u ) \leq 1/k^2
+\end{equation}

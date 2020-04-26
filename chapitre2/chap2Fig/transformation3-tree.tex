@@ -1,0 +1,20 @@
+\tikzset{>=latex}
+
+\begin{forest} for tree={align=center}
+[$\gamma_{_{Nom, MAX(Date\_Com)}}$
+	[$\pi_{_{Nom, Date\_Com}}$
+		[$\bowtie$\\$_{_{ClientsID = ClientsID}}$
+			[$\delta$
+				[$\pi_{_{Nom, ClientsID}}$
+					[\texttt{Clients}]
+				]
+			]
+			[$\delta$
+				[$\pi_{_{Date\_Com, ClientsID}}$
+					[\texttt{Commandes}]
+				]
+			]
+		]
+    ]
+]
+\end{forest}

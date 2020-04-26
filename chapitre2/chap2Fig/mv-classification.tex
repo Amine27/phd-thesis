@@ -1,0 +1,65 @@
+% \documentclass{standalone}
+% \usepackage[utf8]{inputenc}
+% \usepackage[T1]{fontenc}
+% \usepackage{tikz}
+% \usetikzlibrary{arrows,shapes,positioning,shadows,trees}
+% 
+% \begin{document}
+\begin{tikzpicture}
+\tikzset{
+	grow cyclic,
+text width=2.7cm, align=flush center,
+  basic/.style  = {draw, text width=2.7cm, drop shadow, rectangle},
+  root/.style   = {basic, rounded corners=2pt, thin, align=center,fill=green!30},
+%   level 1/.style = {basic, rounded corners=6pt, thin,align=center, fill=green!60,
+%                    text width=6em,font=\footnotesize},
+%   level 2/.style = {basic, thin, align=left, fill=pink!60, text width=6em,font=\scriptsize}
+level 1/.style={level distance=3.5cm,sibling angle=50,
+	basic, rounded corners=6pt, thin,align=center, fill=green!60, font=\footnotesize},
+level 2/.style={text width=2cm, font=\footnotesize, level distance=3.5cm,sibling angle=30,
+	basic, thin, align=left, fill=pink!60},
+edge from parent/.style={->,draw,black},
+>=latex
+}
+[]
+\node[root] {Technique de $\mathcal{VM}$}
+  child {node[level 1]{$\mathcal{BNF}$}
+	child {node[level 2]{Temps de réponse \cite{Ross96}}}
+	child {node[level 2]{Maintenance \cite{Gupta97}}}
+	child {node[level 2]{Multi-objectif \cite{Lawrence06}}}
+  }
+  child {node[level 1]{Stratégie de maintenance}
+    child {node[level 2, xshift=-10pt,yshift=10pt]{Recalcul \cite{Gupta95}}}
+    child {node[level 2, xshift=-20pt]{Incrémentale \cite{Mohania97}}}
+    child {node[level 2, xshift=15pt]{Auto-maintenance \cite{Gupta95b}}}
+  }
+  child {node[level 1, xshift=7pt, yshift=20pt]{Algorithmes de résolution}
+	child {node[level 2]{Déterministes \cite{Gupta99,Gupta97,Boukorca15}}}
+    child {node[level 2, yshift=18pt]{Aléatoires \cite{Kalnis02,Lawrence06}}}
+    child {node[level 2, yshift=8pt]{Hybrides \cite{Zhang01}}}
+    child {node[level 2]{Programmation par contraintes \cite{Mami11,Mami16}}}
+  }
+  child {node[level 1]{Type de sélection}
+    child {node[level 2]{Statique \cite{Yang97,Boukorca15}}}
+    child {node[level 2]{Dynamique \cite{Kehua14,Kotidis99}}}
+  }
+  child {node[level 1]{Structures de données}
+    child {node[level 2]{Graphe ET/OU \cite{Gupta99,Gupta97,Mami11}}}
+    child {node[level 2]{MVPP \cite{Yang97,Boukorca15,Zhang01}}}
+    child {node[level 2]{Treillis \cite{Kalnis02,Harinarayan96,Yu03}}}
+    child {node[level 2, yshift=10pt]{Transformation de requêtes \cite{Ligoudistianos98,Theodoratos97}}}
+    child {node[level 2, yshift=-20pt]{Analyse syntaxique \cite{Agrawal00,Chaves09}}}
+  }
+  child {node[level 1]{Réécriture de requêtes}
+    child {node[level 2, yshift=20pt]{System-R \cite{Chaudhuri95,Levy95}}}
+    child {node[level 2]{Transformation \cite{Goldstein01,Zaharioudakis00}}}
+  }
+  child {node[level 1]{Contraintes}
+    child {node[level 2]{Aucune \cite{Mistry01}}}
+    child {node[level 2, yshift=-10pt]{Stockage \cite{Gupta97}}}
+    child {node[level 2]{Maintenance \cite{Gupta99}}}
+    child {node[level 2]{Réseaux \cite{Chaves09,Mami16}}}
+    child {node[level 2]{Monétaire \cite{Kehua14}}}
+  };
+\end{tikzpicture}
+% \end{document}

@@ -1,0 +1,158 @@
+%%-----------------------------------------------------------------
+%% Manuscrit de thèse
+% Amine Roukh
+% Initialisé le 11-11-15
+%%-----------------------------------------------------------------
+
+\documentclass[11pt]{style/thloria}
+%\documentclass{style/thloria}
+
+%%-----------------------------------------------------------------
+%% Paramétrage pendant l'édition de la thèse
+%%-----------------------------------------------------------------
+
+%% Le chapitre sur lequel je travaille
+%\includeonly{chapitre1}
+
+%% La ligne suivante sert à obtenir un encadré précisant la date de cette version
+%\ThesisDraft
+
+%%-----------------------------------------------------------------
+%% Paramétrage pendant l'édition de la thèse
+%%-----------------------------------------------------------------
+
+\input{include/preamble}
+
+%%-----------------------------------------------------------------
+%% Construction du glossaire
+%%-----------------------------------------------------------------
+
+\include{include/glossary}
+\makeglossaries
+
+%%-----------------------------------------------------------------
+%% Début du document
+%%-----------------------------------------------------------------
+
+\begin{document}
+
+%%-----------------------------------------------------------------
+%% Construction de la page de titre
+%%-----------------------------------------------------------------
+
+%\includepdf[pages=-1,addtotoc={1,chapter,1,Titre,chap:pagegarde}]{pagegarde/pagegarde}
+%\includepdf[pages=-1]{include/pagegarde}
+
+\title{Prise en compte de l'énergie dans la phase d'exploitation des bases de données volumineuses}
+\author{Amine ROUKH}
+\speciality{Informatique}
+\date{14/05/2017}
+
+\AddJuryMember{Président du jury}{Dr. Amir ABDESSAMAD}{Université de Mostaganem}
+\AddJuryMember{Examinateurs}{Dr. Karim SEHABA}{Université de Mostaganem}
+\AddJuryMember{}{Pr. Djamal BENSLIMANE}{IUT, Université de Lyon 1, France}
+\AddJuryMember{Directeur de thèse}{Dr. Omar BELHAMITI}{Université de Mostaganem}
+\AddJuryMember{Co-directeur de thèse}{Pr. Ladjel BELLATRECHE}{ISAE/ENSMA, Poitiers, France}
+\AddJuryMember{Invité}{Pr. Nadjia BENBLIDIA}{Université de Blida}
+
+\maketitle
+\clearpage
+% Remplacer \ref{} par \autoref{}
+%\let\ref\autoref %{}
+%\let\ref\Cref %{}
+
+%-------------------------------------------------------------------
+%                          Le résumé
+%-------------------------------------------------------------------
+
+%\includepdf[pages=-1]{include/resume}
+\include{include/abstract}
+
+%%-----------------------------------------------------------------
+%% Remerciement
+%%-----------------------------------------------------------------
+
+\include{include/remerciements} % To-Uncomment
+
+%-------------------------------------------------------------------
+%                            dedicace
+%-------------------------------------------------------------------
+\begin{ThesisDedication}
+En Hommage à mon Père, que ton âme repose en paix !\\ 
+À tous ceux qui me sont chers :\\
+Ma mère,\\
+Mes frères.
+\end{ThesisDedication}
+
+%%-----------------------------------------------------------------
+%% Table des matières avec chapitre encadré
+%%-----------------------------------------------------------------
+
+{
+\hypersetup{linkcolor=black}
+\dominitoc
+\WritePartLabelInToc
+\WriteChapterLabelInToc
+%\FramePartsInToc
+\tableofcontents
+
+%%-----------------------------------------------------------------
+%% % Inclusion de la liste des figures et des tables
+%%-----------------------------------------------------------------
+
+\WriteThisInToc
+%\listoffigures
+%\listoftables
+{\listoffigures \let\cleardoublepage\clearpage \listoftables}
+} % end hypersetup 
+
+%%-----------------------------------------------------------------
+%% Vocabulaire et notations utilisés
+%%-----------------------------------------------------------------
+
+% la numérotation commence à partir d'ici
+\mainmatter
+
+%%-----------------------------------------------------------------
+%% Inclusion de chaque chapitre de la thèse
+%%-----------------------------------------------------------------
+
+\part{Introduction Générale}
+\include{chapitre1/chapitre1}
+\part{État de l'art}
+\include{chapitre2/chapitre2}
+\include{chapitre3/chapitre3}
+\part{Contributions}
+\include{chapitre4/chapitre4}
+\include{chapitre5/chapitre5}
+\include{chapitre6/chapitre6}
+\part{Conclusion et perspectives}
+\include{chapitre7/chapitre7}
+
+%%-----------------------------------------------------------------
+%% Inclusion des annexes
+%%-----------------------------------------------------------------
+%\Annexes
+\part{Annexes}
+\include{annexes/annexe1}
+\include{annexes/annexe2}
+\include{annexes/annexe3}
+
+%%-----------------------------------------------------------------
+%% Inclusion du glossaire (liste d'abréviations)
+%%-----------------------------------------------------------------
+
+% Put the next title in the same level as \part
+\bookmarksetup{startatroot}
+
+% TODO: Upade the acronym list. Use the cmd: "makeglossaries these"
+\printglossary[type=\acronymtype,title=Abréviations]
+
+%%-----------------------------------------------------------------
+%% Inclusion de la bibliographie
+%%-----------------------------------------------------------------
+
+\printbibliography
+        
+\end{document}
+%donner, mettre en évidence, présenter, exposer, décrire, expliquer

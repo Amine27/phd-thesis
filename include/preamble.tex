@@ -1,0 +1,612 @@
+%%-----------------------------------------------------------------
+%% Packages utilisés
+%%-----------------------------------------------------------------
+
+%\usepackage[Lenny]{fncychap} %% en-tête des chapitres
+\usepackage[usenames,dvipsnames]{color} %% couleur dans le PDF
+\usepackage[hyphens]{url} %% pour formatter les urls
+\usepackage{amsmath,amssymb, amsthm, txfonts, pifont} %% pour les symboles mathématiques
+\usepackage[L,cut=true]{style/thmbox} %% pour avoir de beaux thérorèmes, exemples ...
+\usepackage{alltt} %% pour les requêtes
+%\usepackage[french,nohints]{minitoc} %% pour les tables des matières de chaque chapitre
+%\usepackage[boxruled, vlined, french]{algorithm2e}
+%\usepackage[lined,boxed]{algorithm2e}
+%\usepackage{algorithmic}
+%\usepackage{float}
+\usepackage[chapter]{algorithm} % FIXME: this add en empty page at the end of the document!
+\usepackage{algpseudocode}
+
+\usepackage[french]{minitoc} %% pour les tables des matières de chaque chapitre
+\usepackage{multicol} %% pour faire des passages en multicolonne
+\usepackage{multirow}
+\usepackage{placeins, tabularx, longtable} %% pour la gestion avancée des tableaux
+\usepackage{index}
+\usepackage{lmodern} %% modern latin fonts
+%% Utilisation d'une autre police de caractères pour le document.
+%\usepackage{mathpazo}         % texte et mathématiques en Palatino
+%\usepackage[sc]{mathpazo}
+%\linespread{1.05}         % Palladio needs more leading (space between lines)
+%\usepackage{mathptmx}         % texte et mathématiques en Times
+%\usepackage{kpfonts}
+%\usepackage{newpxtext,newpxmath}
+%\usepackage{newtxtext,newtxmath}
+%\usepackage[libertine,cmintegrals,cmbraces,vvarbb]{newtxmath}
+\usepackage[mono=false]{libertine}   % text
+\usepackage[libertine]{newtxmath}   % math
+\usepackage[scaled=.775]{beramono}   % monospace
+%\usepackage{charter,newpxmath}
+%\usepackage{tgpagella}
+%\usepackage{newcent,newpxmath}
+%\usepackage{fourier}
+
+\usepackage[backend=bibtex,giveninits=true,backref=true]{biblatex}
+\addbibresource{include/biblio}
+\usepackage{csquotes} %% pour la gestion des guillemets français
+%\usepackage[babel]{microtype} %% TEST: nice text formating
+\usepackage[babel,kerning]{microtype} % FIXME: kerning causes ::= to be : :=
+\AtBeginEnvironment{verbatim}{\microtypesetup{kerning=false}}
+\AtBeginEnvironment{listings}{\microtypesetup{kerning=false}}
+
+%\usepackage{ae,aecompl}
+\usepackage{epigraph} %% quote at the beginning of a chapter
+\usepackage{etoolbox}
+\usepackage[caption=false]{subfig}
+\usepackage{booktabs} %% des tables professionnels
+
+\usepackage[svgnames,table]{xcolor} %% des couleurs dans les tables
+\usepackage{listings} %% pour afficher du code source
+\usepackage{lscape}
+\usepackage{tikz}
+\usepackage{forest}
+\usetikzlibrary{arrows,shapes,positioning,shadows,trees}
+\AtBeginEnvironment{tikzpicture}{\catcode`\_=8} % This fix compling error
+
+\usepackage{bookmark}
+%\usepackage[pageanchor=true,draft]{style/tlhypref} %% pour avoir des hyperliens dans le pdf (draf= to solve compiling error!)
+\usepackage[pageanchor=true]{style/tlhypref} %% pour avoir des hyperliens dans le pdf
+\usepackage[french,nameinlink]{cleveref} %% pour ajouter le nom de chaque ref (Figure, Tableau...) (add 'capitalise' param to Capitalise)
+\crefname{annex}{Annexe}{Annexes}
+\crefname{paragraph}{Paragraphe}{Paragraphes}
+\AtBeginDocument{\let\ref\Cref}
+
+\usepackage[acronym,nomain,hyperfirst=false]{glossaries} % load after hyperef to make links clickable
+
+\definecolor{lightgray}{gray}{0.9}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+
+\lstloadlanguages{R,Sql,Bash}
+\lstset{
+  %language=R,
+  %alsolanguage=sql,
+  basicstyle=\small\ttfamily,       % the size of the fonts that are used for the code
+  numbers=left,                   % where to put the line-numbers
+  numberstyle=\tiny\color{gray},  % the style that is used for the line-numbers
+  stepnumber=1,                   % the step between two line-numbers. If it's 1, each line will be numbered
+  numbersep=5pt,                  % how far the line-numbers are from the code
+  backgroundcolor=\color{white},  % choose the background color. You must add \usepackage{color}
+  showspaces=false,               % show spaces adding particular underscores
+  showstringspaces=false,         % underline spaces within strings
+  showtabs=false,                 % show tabs within strings adding particular underscores
+  frame=single,                   % adds a frame around the code
+  rulecolor=\color{black},        % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. commens (green here))
+  tabsize=2,                      % sets default tabsize to 2 spaces
+  captionpos=b,                   % sets the caption-position to bottom
+  breaklines=true,                % sets automatic line breaking
+  breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
+  %title=\lstname,                 % show the filename of files included with \lstinputlisting;
+                                  % also try caption instead of title
+  keywordstyle=\color{blue},      % keyword style
+  commentstyle=\color{dkgreen},   % comment style
+  stringstyle=\color{mauve},      % string literal style
+  escapeinside={\%*}{*)},         % if you want to add a comment within your code
+  morekeywords={*,...},           % if you want to add more keywords to the set
+  literate={<-}{{$\gets$}}1       % gives you nicer assignment arrows
+  {è}{{\`e}}1 {é}{{\'e}}1         % add all non-uft8 char here, see: https://en.wikibooks.org/wiki/LaTeX/Special_Characters#Escaped_codes
+  {ê}{{\^e}}1
+}
+
+\makeatletter
+\renewcommand{\ALG@name}{Algorithme}
+\renewcommand{\listalgorithmname}{Liste des \ALG@name s}
+\makeatother
+\renewcommand{\algorithmicrequire}{\textbf{Entrée:}}
+\renewcommand{\algorithmicensure}{\textbf{Sortie:}}
+%\renewcommand{\algorithmiccomment}[1]{\{#1\}}
+\renewcommand{\algorithmicend}{\textbf{fin}}
+\renewcommand{\algorithmicif}{\textbf{si}}
+\renewcommand{\algorithmicthen}{\textbf{alors}}
+\renewcommand{\algorithmicelse}{\textbf{sinon}}
+\renewcommand{\algorithmicfor}{\textbf{pour}}
+\renewcommand{\algorithmicforall}{\textbf{pour tout}}
+\renewcommand{\algorithmicdo}{\textbf{faire}}
+\renewcommand{\algorithmicwhile}{\textbf{tant que}}
+\renewcommand{\algorithmicrepeat}{\textbf{répéter}}
+\renewcommand{\algorithmicuntil}{\textbf{jusqu'à}}
+\renewcommand{\algorithmicreturn}{\textbf{retourner}}
+\newcommand{\algorithmicelsif}{\algorithmicelse\ \algorithmicif}
+\newcommand{\algorithmicendif}{\algorithmicend\ \algorithmicif}
+\newcommand{\algorithmicendfor}{\algorithmicend\ \algorithmicfor}
+
+\newtheorem{theorem}{Théorème}
+
+\newcommand{\leftsemijoin}{\mbox{$\mathrel{\raise1pt\hbox{\vrule height5pt
+depth0pt width0.6pt\hskip-1.5pt$>$\hskip -2.5pt$<$}}$}}
+
+% Pour avoir le style calligraphic des symboles mathcal
+%\DeclareSymbolFont{usualmathcal}{OMS}{cmsy}{m}{n}
+%\DeclareSymbolFontAlphabet{\mathcal}{usualmathcal}
+
+%\colorlet{red-black}{red!80!black}
+%\colorlet{green-black}{green!70!black}
+\definecolor{darkblue}{rgb}{0,0,.5}
+\definecolor{greenforlinks}{rgb}{0.09, 0.45, 0.27}
+% ainsi que des mots clés dans le PDF
+\hypersetup{
+  pdftitle={Thèse de Amine ROUKH},
+  pdfauthor={Amine ROUKH},
+  pdfsubject={La Prise en Compte de l'Énergie dans la Phase d'Exploitation des Bases de Données},
+  pdfkeywords={Base de données, Optimisation, Énergie, Modélisation},
+  hyperindex = true,
+  hyperfootnotes = true,
+  breaklinks = true,
+  %colorlinks = false,
+  bookmarks = true,
+  colorlinks,
+  allcolors=greenforlinks,
+  linktoc=all
+}
+% Make the cite brackets: '[]' colored
+%\DeclareCiteCommand{\cite}[\color{greenforlinks}\mkbibbrackets]
+\newcommand{\mkbibbracketscol}[1]{\textcolor{greenforlinks}{\mkbibbrackets{#1}}}
+\DeclareCiteCommand{\cite}[\mkbibbracketscol]
+  {\usebibmacro{prenote}}
+  {\usebibmacro{citeindex}%
+   \usebibmacro{cite}}
+  {\multicitedelim}
+  {\usebibmacro{postnote}}
+
+% \usepackage[subfigure]{tocloft}
+% \renewcommand\cftchappagefont{\color{DarkGreen}}
+% \renewcommand\cftsecpagefont{\color{DarkGreen}}
+% \renewcommand\cftsubsecpagefont{\color{DarkGreen}}
+%---SORTIES--------------------------------------------------------------------
+
+\newif\ifpdf
+
+\ifx\pdfoutput\undefined
+   \pdffalse
+\else
+   \ifnum\pdfoutput=0
+      \pdffalse
+   \else
+      \pdfoutput=1 \pdftrue
+   \fi
+\fi
+
+% just for test, un-comment if nessesary!
+% PDF/PS specific
+% \ifpdf \pdfcompresslevel=9
+% \usepackage[pdftex]{graphicx}
+% \DeclareGraphicsExtensions{.jpg, .png , .pdf, .bmp} \else
+% %\usepackage{graphicx}
+% \usepackage[dvips]{graphicx}
+% \DeclareGraphicsExtensions{.eps, .ps, .eps.gz, .ps.gz} \fi
+
+% on pourra commenter l'utilisation de ce package pour une impression
+
+%\usepackage{syntax} %% j'utilise ce package pour la syntaxe.
+\usepackage{pdfpages} %% pour inclure la couverture
+
+%% Il présente un bug sous miktex qui peut être corrigé par le code suivant
+
+\makeatletter
+\def\addspecial#1{%
+  \remspecial{#1}%
+  \expandafter\def\expandafter\dospecials\expandafter{\dospecials\do#1}%
+  \expandafter\def\expandafter\@sanitize\expandafter{%
+    \@sanitize\@makeother#1}%
+}
+
+
+\def\gr@setpar{%
+  \def\par{%
+    \parshape\@ne\@totalleftmargin\linewidth%
+    \@@par%
+    \catcode`\<12%
+    \everypar{%
+      \everypar{}%
+      \catcode`\<\active%
+      \gr@implitem\@nil%
+    }%
+  }%
+}%
+
+
+\def\gr@implitem#1<#2> #3 {%
+  \sbox\z@{\hskip\labelsep\grammarlabel{#2}{#3}}%
+  \strut\@@par%
+  \vskip-\parskip%
+  \vskip-\baselineskip%
+  \hrule\@height\z@\@depth\z@\relax%
+  \item[\unhbox\z@]%
+  \catcode`\<\active%
+}
+
+\makeatother
+
+%%-----------------------------------------------------------------
+%% Paramétrage du formattage
+%%-----------------------------------------------------------------
+
+%% Corrections pour les imprimantes recto-verso
+\ShiftOddPagesRight{-1mm}
+\ShiftOddPagesDown{2.5mm}
+\ShiftEvenPagesRight{0mm}
+\ShiftEvenPagesDown{0mm}
+\linespread{1.1}
+
+%% Pas d'entête et de pieds de page sur les pages vides avant chapitre
+\EmptyPageStyle{empty}
+
+%% Augmentation de l'espace entre les paragraphes
+\parskip=5pt
+
+%% la longueur des captions des longtables
+\setlength{\LTcapwidth}{6.3in}
+%\grammarindent=4.5cm
+%\grammarparsep=0.1cm
+
+%% Pas d'espace mis automatiquement avant :
+\NoAutoSpaceBeforeFDP
+
+%% Profondeur des numérotations
+\setcounter{secnumdepth}{5} %% des sections
+\setcounter{tocdepth}{3} %% de la table des matières
+\setcounter{minitocdepth}{2} %% minitoc de chaque chapitre
+
+%% Ajouter une ligne après le titre de la paragraphe
+\makeatletter
+\renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
+   {-3.25ex\@plus -1ex \@minus -.2ex}%
+   {1.5ex \@plus .2ex}%
+   {\normalfont\normalsize\bfseries}}
+\makeatother
+
+%% Et pour le sous paragraphe
+\makeatletter
+\renewcommand\subparagraph{\@startsection{paragraph}{4}{\z@}%
+   {-3.25ex\@plus -1ex \@minus -.2ex}%
+   {1.5ex \@plus .2ex}%
+   {\normalfont\normalsize\bfseries}}
+\makeatother
+
+% prints author names as small caps
+\renewcommand{\mkbibnamegiven}[1]{\textsc{#1}}
+\renewcommand{\mkbibnamefamily}[1]{\textsc{#1}}
+\renewcommand{\mkbibnameprefix}[1]{\textsc{#1}}
+\renewcommand{\mkbibnamesuffix}[1]{\textsc{#1}}
+% Make the font size of bib small
+\AtBeginBibliography{\small}
+
+%%-----------------------------------------------------------------
+%% On centre le titre des chapitres
+%%-----------------------------------------------------------------
+
+% \ChNameVar{\fontsize{14}{16}\usefont{OT1}{phv}{m}{n}\selectfont}
+% \ChNumVar{\fontsize{60}{62}\usefont{OT1}{ptm}{m}{n}\selectfont}
+% \ChTitleVar{\center\LARGE\bfseries\boldmath} \ChRuleWidth{1pt}
+
+% \usepackage{pstricks}
+% \makeatletter
+% \def\thickhrulefill{\leavevmode \leaders \hrule height 1ex \hfill \kern \z@}
+% \def\@makechapterhead#1{%
+%   \reset@font
+%   \parindent \z@ 
+%   \vspace*{10\p@}%
+%   \hbox{%
+%     \vbox{%
+%       \hsize=1.5cm%
+%       \begin{tabular}{c}
+%         \scshape \strut \@chapapp{} \\
+%         %\psboxit{box 0 0 0 setrgbcolor fill}{%
+%         \colorbox{black}{%
+%           \vrule depth 5em width 0pt%
+%           \vrule height 0pt depth 0pt width 5pt%
+%           {\white \Huge \bfseries 
+%             \strut \vrule height 1em depth 0pt width 0pt
+%             \thechapter}%
+%           \vrule height 0pt depth 0pt width 5pt%
+%           }
+%       \end{tabular}%
+%       }%
+%     \vbox{%
+%       \advance\hsize by -2cm
+%       \hrule height 0.4pt depth 0pt width \hsize
+%       \par
+%       %\vskip 6pt%
+%       \vskip -6pt%
+%       \hspace{20pt}%
+%       \parbox{300pt}{%
+%         \center \LARGE \bfseries #1}%
+%       }%
+%     }%
+%   %\vskip 100\p@
+% }
+% \makeatother
+
+\makeatletter
+\usepackage[explicit]{titlesec}
+\newcommand*\chapterlabel{}
+\newcommand{\ifempty}[3]{\ifx#1\empty#2\else#3\fi} 
+\titleformat{\chapter}
+%\titleformat{name=\chapter,numberless}[display]
+{\gdef\chapterlabel{} \LARGE\bfseries}
+{\gdef\chapterlabel{\thechapter\ }}{0pt}
+{\begin{tikzpicture}[remember picture,overlay]
+\node[yshift=-10cm,xshift=3cm] at (current page.north west)
+{\begin{tikzpicture}[remember picture, overlay]
+%\draw (0,0.5) rectangle (1.3cm,5cm);
+\fill[] (0,2) rectangle (1cm,5cm);
+\draw[] (1.2cm,4.7cm) -- (15cm,4.7cm);
+\node[anchor=west,yshift=4.77cm,xshift=14.75cm]{
+% start flower
+\begin{pgfpicture}
+\pgfpathmoveto{\pgfqpoint{0.016cm}{0.027cm}}
+\pgfpathlineto{\pgfqpoint{1.123cm}{0.027cm}}
+\pgfpathlineto{\pgfqpoint{1.123cm}{0.812cm}}
+\pgfpathlineto{\pgfqpoint{0.016cm}{0.812cm}}
+\pgfpathclose
+\pgfusepath{clip}
+\begin{pgfscope}
+\begin{pgfscope}
+\pgfpathmoveto{\pgfqpoint{0cm}{0cm}}
+\pgfpathlineto{\pgfqpoint{88.944cm}{0cm}}
+\pgfpathlineto{\pgfqpoint{88.944cm}{88.944cm}}
+\pgfpathlineto{\pgfqpoint{0cm}{88.944cm}}
+\pgfpathclose
+\pgfusepath{clip}
+\pgfpathmoveto{\pgfqpoint{0.024cm}{0.365cm}}
+\pgfpathlineto{\pgfqpoint{0.018cm}{0.336cm}}
+\pgfpathcurveto{\pgfqpoint{0.035cm}{0.338cm}}{\pgfqpoint{0.058cm}{0.336cm}}{\pgfqpoint{0.071cm}{0.334cm}}
+\pgfpathcurveto{\pgfqpoint{0.117cm}{0.326cm}}{\pgfqpoint{0.165cm}{0.311cm}}{\pgfqpoint{0.249cm}{0.267cm}}
+\pgfpathcurveto{\pgfqpoint{0.281cm}{0.25cm}}{\pgfqpoint{0.352cm}{0.192cm}}{\pgfqpoint{0.424cm}{0.131cm}}
+\pgfpathcurveto{\pgfqpoint{0.491cm}{0.075cm}}{\pgfqpoint{0.543cm}{0.028cm}}{\pgfqpoint{0.565cm}{0.029cm}}
+\pgfpathcurveto{\pgfqpoint{0.592cm}{0.029cm}}{\pgfqpoint{0.601cm}{0.048cm}}{\pgfqpoint{0.606cm}{0.053cm}}
+\pgfpathcurveto{\pgfqpoint{0.616cm}{0.063cm}}{\pgfqpoint{0.618cm}{0.104cm}}{\pgfqpoint{0.628cm}{0.115cm}}
+\pgfpathcurveto{\pgfqpoint{0.648cm}{0.135cm}}{\pgfqpoint{0.671cm}{0.138cm}}{\pgfqpoint{0.686cm}{0.137cm}}
+\pgfpathcurveto{\pgfqpoint{0.732cm}{0.133cm}}{\pgfqpoint{0.756cm}{0.112cm}}{\pgfqpoint{0.8cm}{0.099cm}}
+\pgfpathcurveto{\pgfqpoint{0.839cm}{0.088cm}}{\pgfqpoint{0.866cm}{0.091cm}}{\pgfqpoint{0.899cm}{0.101cm}}
+\pgfpathcurveto{\pgfqpoint{0.93cm}{0.11cm}}{\pgfqpoint{0.958cm}{0.12cm}}{\pgfqpoint{0.979cm}{0.146cm}}
+\pgfpathcurveto{\pgfqpoint{1.006cm}{0.179cm}}{\pgfqpoint{0.998cm}{0.205cm}}{\pgfqpoint{1.011cm}{0.228cm}}
+\pgfpathcurveto{\pgfqpoint{1.024cm}{0.252cm}}{\pgfqpoint{1.047cm}{0.276cm}}{\pgfqpoint{1.062cm}{0.299cm}}
+\pgfpathcurveto{\pgfqpoint{1.079cm}{0.323cm}}{\pgfqpoint{1.108cm}{0.356cm}}{\pgfqpoint{1.121cm}{0.432cm}}
+\pgfpathcurveto{\pgfqpoint{1.092cm}{0.378cm}}{\pgfqpoint{1.044cm}{0.346cm}}{\pgfqpoint{1.025cm}{0.332cm}}
+\pgfpathcurveto{\pgfqpoint{0.98cm}{0.301cm}}{\pgfqpoint{0.907cm}{0.269cm}}{\pgfqpoint{0.87cm}{0.263cm}}
+\pgfpathcurveto{\pgfqpoint{0.769cm}{0.247cm}}{\pgfqpoint{0.745cm}{0.247cm}}{\pgfqpoint{0.611cm}{0.248cm}}
+\pgfpathcurveto{\pgfqpoint{0.488cm}{0.249cm}}{\pgfqpoint{0.409cm}{0.258cm}}{\pgfqpoint{0.379cm}{0.26cm}}
+\pgfpathcurveto{\pgfqpoint{0.41cm}{0.262cm}}{\pgfqpoint{0.536cm}{0.258cm}}{\pgfqpoint{0.671cm}{0.272cm}}
+\pgfpathcurveto{\pgfqpoint{0.805cm}{0.286cm}}{\pgfqpoint{0.864cm}{0.299cm}}{\pgfqpoint{0.917cm}{0.32cm}}
+\pgfpathcurveto{\pgfqpoint{0.946cm}{0.331cm}}{\pgfqpoint{1.007cm}{0.362cm}}{\pgfqpoint{1.063cm}{0.424cm}}
+\pgfpathcurveto{\pgfqpoint{1.082cm}{0.446cm}}{\pgfqpoint{1.102cm}{0.478cm}}{\pgfqpoint{1.114cm}{0.509cm}}
+\pgfpathcurveto{\pgfqpoint{1.11cm}{0.565cm}}{\pgfqpoint{1.077cm}{0.641cm}}{\pgfqpoint{1.04cm}{0.686cm}}
+\pgfpathcurveto{\pgfqpoint{0.999cm}{0.735cm}}{\pgfqpoint{0.949cm}{0.767cm}}{\pgfqpoint{0.901cm}{0.785cm}}
+\pgfpathcurveto{\pgfqpoint{0.867cm}{0.798cm}}{\pgfqpoint{0.807cm}{0.811cm}}{\pgfqpoint{0.78cm}{0.81cm}}
+\pgfpathcurveto{\pgfqpoint{0.797cm}{0.795cm}}{\pgfqpoint{0.84cm}{0.762cm}}{\pgfqpoint{0.894cm}{0.702cm}}
+\pgfpathcurveto{\pgfqpoint{0.93cm}{0.661cm}}{\pgfqpoint{0.955cm}{0.625cm}}{\pgfqpoint{0.968cm}{0.572cm}}
+\pgfpathcurveto{\pgfqpoint{0.984cm}{0.506cm}}{\pgfqpoint{0.957cm}{0.465cm}}{\pgfqpoint{0.942cm}{0.45cm}}
+\pgfpathcurveto{\pgfqpoint{0.92cm}{0.429cm}}{\pgfqpoint{0.891cm}{0.421cm}}{\pgfqpoint{0.886cm}{0.426cm}}
+\pgfpathcurveto{\pgfqpoint{0.876cm}{0.437cm}}{\pgfqpoint{0.881cm}{0.452cm}}{\pgfqpoint{0.88cm}{0.468cm}}
+\pgfpathcurveto{\pgfqpoint{0.878cm}{0.502cm}}{\pgfqpoint{0.869cm}{0.51cm}}{\pgfqpoint{0.822cm}{0.493cm}}
+\pgfpathcurveto{\pgfqpoint{0.781cm}{0.478cm}}{\pgfqpoint{0.754cm}{0.448cm}}{\pgfqpoint{0.727cm}{0.423cm}}
+\pgfpathcurveto{\pgfqpoint{0.707cm}{0.404cm}}{\pgfqpoint{0.692cm}{0.389cm}}{\pgfqpoint{0.672cm}{0.378cm}}
+\pgfpathcurveto{\pgfqpoint{0.655cm}{0.367cm}}{\pgfqpoint{0.621cm}{0.362cm}}{\pgfqpoint{0.616cm}{0.372cm}}
+\pgfpathcurveto{\pgfqpoint{0.61cm}{0.384cm}}{\pgfqpoint{0.624cm}{0.391cm}}{\pgfqpoint{0.641cm}{0.426cm}}
+\pgfpathcurveto{\pgfqpoint{0.654cm}{0.452cm}}{\pgfqpoint{0.637cm}{0.469cm}}{\pgfqpoint{0.607cm}{0.481cm}}
+\pgfpathcurveto{\pgfqpoint{0.568cm}{0.496cm}}{\pgfqpoint{0.516cm}{0.482cm}}{\pgfqpoint{0.46cm}{0.447cm}}
+\pgfpathcurveto{\pgfqpoint{0.401cm}{0.41cm}}{\pgfqpoint{0.388cm}{0.395cm}}{\pgfqpoint{0.346cm}{0.362cm}}
+\pgfpathcurveto{\pgfqpoint{0.305cm}{0.331cm}}{\pgfqpoint{0.294cm}{0.322cm}}{\pgfqpoint{0.277cm}{0.319cm}}
+\pgfpathcurveto{\pgfqpoint{0.253cm}{0.315cm}}{\pgfqpoint{0.199cm}{0.32cm}}{\pgfqpoint{0.161cm}{0.328cm}}
+\pgfpathcurveto{\pgfqpoint{0.098cm}{0.343cm}}{\pgfqpoint{0.064cm}{0.352cm}}{\pgfqpoint{0.024cm}{0.365cm}}
+\pgfusepath{fill}
+\end{pgfscope}
+\end{pgfscope}
+\end{pgfpicture}
+% end flower 
+};
+\node[anchor=north,yshift=5.65cm,xshift=0.495cm]{{{\ifempty{\chapterlabel}{}{\normalsize \sc \@chapapp{}}}}};
+\node[anchor=north,yshift=4.8cm,xshift=0.49cm]{\color{white}\LARGE\chapterlabel};
+\node[anchor=north west,yshift=4.5cm,xshift=1.7cm]{\begin{minipage}[t]{13cm}\vspace{0pt}\center#1\vfill\end{minipage}};
+%\node[anchor=north west,yshift=4.5cm,xshift=1.7cm]{\begin{minipage}[t]{13cm}\vspace{0pt}\raggedright#1\vfill\end{minipage}};
+\end{tikzpicture}};\end{tikzpicture}}
+\titlespacing*{\chapter}{0pt}{50pt}{50pt}
+\makeatother
+
+%%-----------------------------------------------------------------
+%% En-tête et pieds de page
+%%-----------------------------------------------------------------
+
+\setlength{\HeadRuleWidth}{0.4pt}
+\pagestyle{ThesisHeadings}
+
+%%-----------------------------------------------------------------
+%% Une citation au début du chapitre
+%%-----------------------------------------------------------------
+
+%\epigraphsize{\small}% Default
+\setlength\epigraphwidth{15cm}
+\setlength\epigraphrule{0pt}
+\renewcommand{\textflush}{flushright}
+
+\makeatletter
+\patchcmd{\epigraph}{\@epitext{#1}}{\itshape\@epitext{#1}}{}{}
+\makeatother
+
+%%---------------------------------------------------------------------------
+%% Option pour la langue française
+%%---------------------------------------------------------------------------
+\addto\captionsfrench{%
+% changer titre de la table des matière
+%\renewcommand{\contentsname}{Table des matières}
+%changer le titre de la liste des figures
+\renewcommand{\listfigurename}{Liste des figures}
+%changer le titre de la liste des tableaux
+%\renewcommand{\listtablename}{Liste des tableaux}
+%%changer le titre de l'abstract
+%\renewcommand{\abstractname}{Abstract}
+%changer la référence des tableaux
+\renewcommand*{\tablename}{Tableau}
+%changer la référence des figures
+%\renewcommand*{\figurename}{Figure}
+% Chapitre
+%\renewcommand*{\chaptername}{Chapitre}
+% Partie
+%\renewcommand*{\partname}{Partie}
+% Annexe
+%\renewcommand*{\appendixname}{Annexe}
+%références
+%\renewcommand{\refname}{Références}
+%\renewcommand{\bibname}{Références}
+}
+
+
+%%-----------------------------------------------------------------
+%% Liste de commandes utilisées dans la thèse
+%%-----------------------------------------------------------------
+
+\newcommand{\vs}{\vspace{1ex}}              % Small vertical space
+
+\newcommand\code[1]{{\tt #1}}
+\def\<#1>{\synt{#1}}
+
+\newcommand\squote{\textrm{\code{'}}}
+\newcommand\diese{\textrm{\code{\#}}}
+
+\newcommand\spec[1]{\textrm{\code{#1}}}
+
+\newcommand\total{$\bullet$}
+
+\newcommand\partiel{$\circ$}
+
+\newcommand\aucun{-}
+
+% Pour la numérotation des équations
+\renewcommand{\theequation}{\thesection \Alph{equation}}
+
+
+\newcommand\codeMath[1]{{$\mathtt{#1}$}}
+\newcommand\Font[1]{{\footnotesize \mathtt{#1}}}
+
+%\newtheorem[S,underline=false]{example}{Exemple}{\itshape}{\rmfamily}
+%\newtheorem{example}{Exemple}{\itshape}{\rmfamily}
+% \renewenvironment{example}[1][Exemple]{%
+%   \par%
+%   \list{\hspace\labelsep\textit{#1.}}{%
+%     \leftmargin=\parindent%
+%     \labelwidth=\parindent}%
+%   \item\relax}{%
+%   \endlist}
+
+\newcounter{example}[chapter]
+\renewenvironment{example}[1][]{\refstepcounter{example}\par\medskip
+   \noindent \textbf{Exemple~\theexample. #1} \itshape\rmfamily}{\medskip}
+
+\newenvironment{explication}[1][Explication]{%
+  \par%
+  \list{\hspace\labelsep\textit{#1.}}{%
+    \leftmargin=\parindent%
+    \labelwidth=\parindent}%
+  \item\relax}{%
+  \endlist}
+
+  \newenvironment{remarque}[1][Remarque]{%
+  \par%
+  \list{\hspace\labelsep\textit{#1.}}{%
+    \leftmargin=\parindent%
+    \labelwidth=\parindent}%
+  \item\relax}{%
+  \endlist}
+
+%\newtheorem[S,underline=false]{usecase}{Use case}{\itshape}{\rmfamily}
+
+\newtheorem{definition}{Définition}
+
+\newtheorem[L,cut=false]{exigence}{Exigence}
+
+\newtheorem{contrainte}{Contrainte}
+
+%% Commandes pour saisir des noms
+
+%\newcommand{\encore}{\mbox{\em Encore }}    % Algèbre Encore
+%\newcommand{\ontoalgebra}{\mbox{\em OntoAlgebra }}    % Algèbre OntoAlgebra
+
+\newenvironment{abstract}{%
+      \list{}{\advance\topsep by0.35cm\relax
+      \leftmargin=1cm
+      \labelwidth=1cm
+      \listparindent=1cm
+      \itemindent\listparindent
+      \rightmargin\leftmargin}\item[\hskip\labelsep
+                                    \bfseries Résumé.]}
+    {\endlist}
+
+\newenvironment{monitemize}%
+{ \begin{list}%
+        {--}%
+        {\setlength{\labelwidth}{30pt}%
+         \setlength{\leftmargin}{30pt}%
+         \setlength{\topsep}{0pt}%
+         \setlength{\itemsep}{2pt}}}%
+{ \end{list} }
+
+\newcounter{enum}
+\newenvironment{monenumerate}
+{ \begin{list}%
+    {\arabic{enum}. }{
+    \usecounter{enum}%
+         \setlength{\labelwidth}{30pt}%
+         \setlength{\leftmargin}{30pt}%
+         \setlength{\topsep}{0pt}%
+         \setlength{\itemsep}{2pt}}}%
+{ \end{list} }
+
+\newcounter{hypcpt}
+\newenvironment{hyp}
+{ \begin{list}%
+    {\uline{Hypothèse \arabic{hypcpt}.} }{
+    \usecounter{hypcpt}%
+         \setlength{\labelwidth}{30pt}%
+         \setlength{\leftmargin}{30pt}%
+         \setlength{\topsep}{0pt}%
+         \setlength{\itemsep}{2pt}}}%
+{ \end{list} }
+
+\newcounter{enumpar}
+\newenvironment{monenumeratepar}
+{ \begin{list}%
+    {(\arabic{enumpar}) }{
+    \usecounter{enumpar}%
+         \setlength{\labelwidth}{30pt}%
+         \setlength{\leftmargin}{40pt}%
+         \setlength{\topsep}{0pt}%
+         \setlength{\itemsep}{\parsep}}}%
+{ \end{list} }
+
+% Par défaut la commande \cite ne coupe pas les mots
+% ce qui provoque le débordement dans la marge
+% voici le code permettant de corriger ce comportement
+
+\makeatletter
+\def\@citex[#1]#2{%
+  \let\@citea\@empty
+  \@cite{\@for\@citeb:=#2\do
+    {\@citea\def\@citea{,\penalty\@m\ }%
+     \edef\@citeb{\expandafter\@firstofone\@citeb\@empty}%
+     \if@filesw\immediate\write\@auxout{\string\citation{\@citeb}}\fi
+     \@ifundefined{b@\@citeb}{\mbox{\reset@font\bfseries ?}%
+       \G@refundefinedtrue
+       \@latex@warning
+         {Citation `\@citeb' on page \thepage \space undefined}}%
+       {{\csname b@\@citeb\endcsname}}}}{#1}}
+\makeatother
+ 
