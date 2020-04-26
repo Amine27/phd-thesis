@@ -1968,17 +1968,17 @@
      }
 \def\@g@g@r{\ifx\@fguills\undefined\guillemotright\else\@fguills\fi}
 \def\@g@g@l{\ifx\@oguills\undefined\guillemotleft\else\@oguills\fi}
-\DeclareInputText{"AB}{\@g@g@l\nobreak\kern+0.13em\nobreak\ignorespaces}
-\DeclareInputText{"BB}{\unskip\kern+0.13em\nobreak\@g@g@r}
+%\DeclareInputText{"AB}{\@g@g@l\nobreak\kern+0.13em\nobreak\ignorespaces}
+%\DeclareInputText{"BB}{\unskip\kern+0.13em\nobreak\@g@g@r}
 \newcommand{\TL}{{\normalfont\textsf{thloria}}}
 \errorcontextlines5
-\newcommand\@removefromreset[2]{\let\@tempb\@elt
-   \def\@tempa#1{@&#1}\expandafter\let\csname @*#1*\endcsname\@tempa
-   \def\@elt##1{\expandafter\ifx\csname @*##1*\endcsname\@tempa\else
-                \noexpand\@elt{##1}\fi}%
-   \expandafter\xdef\csname cl@#2\endcsname{\csname cl@#2\endcsname}%
-   \let\@elt\@tempb
-   \expandafter\let\csname @*#1*\endcsname\@undefined}
+% \newcommand\@removefromreset[2]{\let\@tempb\@elt
+%    \def\@tempa#1{@&#1}\expandafter\let\csname @*#1*\endcsname\@tempa
+%    \def\@elt##1{\expandafter\ifx\csname @*##1*\endcsname\@tempa\else
+%                 \noexpand\@elt{##1}\fi}%
+%    \expandafter\xdef\csname cl@#2\endcsname{\csname cl@#2\endcsname}%
+%    \let\@elt\@tempb
+%    \expandafter\let\csname @*#1*\endcsname\@undefined}
 \newcommand\ResetChaptersAtParts{%
     \@addtoreset{chapter}{part}%
     \@addtoreset{annex}{part}%
